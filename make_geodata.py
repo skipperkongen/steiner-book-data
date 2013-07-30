@@ -1,4 +1,6 @@
-import re	
+import re
+from shapely.geometry import Point, LineString, mapping
+from fiona import collection
 
 file_content = open("cities_dk.esmt").read()
 file_content = re.sub('\n', ' ', file_content)
@@ -51,10 +53,26 @@ for i, token in enumerate(rest):
 		# HOW FAR TO SKIP?
 		skip = offset + num_e * 2 + 2
 
-print all_terminals[:10], '\n'
-print all_steiner_pts[:10], '\n'
-print all_edges[:10], '\n'
- 
+all_terminals = map(lambda coord: Point([coord[0], coord[1]]), all_terminals)
+all_steiner_pts = map(lambda coord: Point([coord[0], coord[1]]), all_steiner_pts)
+all_edges = map(lambda coords: LineString(coords), all_edges)
 
+#print all_terminals[:10], '\n'
+#print all_steiner_pts[:10], '\n'
+#print all_edges[:10], '\n'
+
+schema = { 'geometry': 'Point', 'properties': {} }
+with collection("all_terminals.shp", "w", "ESRI Shapefile", schema) as output:
+	for terminal in all_terminals:
+		output.write({'geometry': mapping(terminal), 'properties': {}})
+
+with collection("all_steiner.shp", "w", "ESRI Shapefile", schema) as output:
+	for steiner_pt in all_steiner_pts:
+		output.write({'geometry': mapping(steiner_pt), 'properties': {}})
+	
+schema = { 'geometry': 'LineString', 'properties': {} }
+with collection("all_edges.shp", "w", "ESRI Shapefile", schema) as output:
+	for edge in all_edges:
+		output.write({'geometry': mapping(edge), 'properties': {}})
 		
 		
