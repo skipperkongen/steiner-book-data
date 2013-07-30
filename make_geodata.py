@@ -39,8 +39,22 @@ for i, token in enumerate(rest):
 		offset += num_s*4 + 1
 		num_e = int(rest[i + offset])
 		edge_segment = rest[i+offset+1: i+offset+1+num_e*2]
-		print edge_segment
+		edges = [
+			(
+				terminals[int(a)-1] if int(a) > 0 else steiner_points[abs(int(a)) - 1], 
+				terminals[int(b)-1] if int(b) > 0 else steiner_points[abs(int(b)) - 1]
+			) for (j, (a, b)) in enumerate(zip(edge_segment, edge_segment[1:])) if j % 2 == 0
+		]
+		# EXTEND COLLECTIONS
+		all_edges.extend(edges)
+		all_steiner_pts.extend(steiner_points)
 		# HOW FAR TO SKIP?
 		skip = offset + num_e * 2 + 2
+
+print all_terminals[:10], '\n'
+print all_steiner_pts[:10], '\n'
+print all_edges[:10], '\n'
+ 
+
 		
-		all_steiner_pts.extend(steiner_points)
+		
